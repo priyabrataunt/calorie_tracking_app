@@ -9,7 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@google/genai": "^1.46.0",
     "babel-preset-expo": "~55.0.8",
     "expo": "~55.0.8",
     "expo-camera": "~55.0.11",

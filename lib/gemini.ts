@@ -1,8 +1,8 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 const API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY ?? '';
 
-const genAI = new GoogleGenerativeAI(API_KEY);
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 export interface FoodRecognitionResult {
   name: string;
@@ -35,19 +35,15 @@ export async function recognizeFoodFromImage(
     throw new Error('Gemini API key not set. Add EXPO_PUBLIC_GEMINI_API_KEY to your .env file.');
   }
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-pro',
+    contents: [
+      { text: FOOD_PROMPT },
+      { inlineData: { data: base64Image, mimeType } },
+    ],
+  });
 
-  const result = await model.generateContent([
-    FOOD_PROMPT,
-    {
-      inlineData: {
-        data: base64Image,
-        mimeType,
-      },
-    },
-  ]);
-
-  const text = result.response.text().trim();
+  const text = (response.text ?? '').trim();
 
   // Strip markdown code fences if present
   const jsonText = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
@@ -76,13 +72,12 @@ export async function lookupFoodFromText(
     throw new Error('Gemini API key not set. Add EXPO_PUBLIC_GEMINI_API_KEY to your .env file.');
   }
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
-  const result = await model.generateContent([
-    TEXT_LOOKUP_PROMPT,
-    `Food: ${query}`,
-  ]);
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-pro',
+    contents: `${TEXT_LOOKUP_PROMPT}\nFood: ${query}`,
+  });
 
-  const text = result.response.text().trim();
+  const text = (response.text ?? '').trim();
   const jsonText = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
   return JSON.parse(jsonText);
 }
@@ -111,14 +106,17 @@ export async function getMealSuggestions(
   const remaining = goal - consumed;
   if (remaining < 100) return [];
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
   const prompt = SUGGESTION_PROMPT
     .replace('{consumed}', String(consumed))
     .replace('{goal}', String(goal))
     .replace('{remaining}', String(remaining));
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text().trim();
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-pro',
+    contents: prompt,
+  });
+
+  const text = (response.text ?? '').trim();
   const jsonText = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
   return JSON.parse(jsonText) as MealSuggestion[];
 }

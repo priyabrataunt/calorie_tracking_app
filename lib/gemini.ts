@@ -36,7 +36,7 @@ export async function recognizeFoodFromImage(
   }
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash-lite',
+    model: 'gemini-2.5-flash',
     contents: [
       {
         role: 'user',
@@ -78,7 +78,7 @@ export async function lookupFoodFromText(
   }
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash-lite',
+    model: 'gemini-2.5-flash',
     contents: `${TEXT_LOOKUP_PROMPT}\nFood: ${query}`,
   });
 
@@ -117,7 +117,7 @@ export async function getMealSuggestions(
     .replace('{remaining}', String(remaining));
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash-lite',
+    model: 'gemini-2.5-flash',
     contents: prompt,
   });
 

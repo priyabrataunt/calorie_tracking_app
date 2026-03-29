@@ -36,10 +36,15 @@ export async function recognizeFoodFromImage(
   }
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-pro',
+    model: 'gemini-2.0-flash-lite',
     contents: [
-      { text: FOOD_PROMPT },
-      { inlineData: { data: base64Image, mimeType } },
+      {
+        role: 'user',
+        parts: [
+          { text: FOOD_PROMPT },
+          { inlineData: { data: base64Image, mimeType } },
+        ],
+      },
     ],
   });
 
@@ -73,7 +78,7 @@ export async function lookupFoodFromText(
   }
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-pro',
+    model: 'gemini-2.0-flash-lite',
     contents: `${TEXT_LOOKUP_PROMPT}\nFood: ${query}`,
   });
 
@@ -112,7 +117,7 @@ export async function getMealSuggestions(
     .replace('{remaining}', String(remaining));
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-pro',
+    model: 'gemini-2.0-flash-lite',
     contents: prompt,
   });
 

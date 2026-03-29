@@ -98,8 +98,8 @@ export default function LogMealScreen() {
       setProtein(String(result.protein));
       setCarbs(String(result.carbs));
       setFat(String(result.fat));
-    } catch {
-      Alert.alert('Lookup Failed', 'Could not estimate nutrition. Please fill in manually.');
+    } catch (e: any) {
+      Alert.alert('Lookup Failed', e?.message ?? 'Could not estimate nutrition. Please fill in manually.');
     } finally {
       setLookingUp(false);
     }
